@@ -10,7 +10,7 @@ exports.createPayment = async (req, res) => {
             })
         }
 
-        const validMethods = ["UPI", "card", "NetBanking"]
+        const validMethods = ["UPI", "Card", "NetBanking"]
         if (!validMethods.includes(paymentMethod)) {
             return res.status(400).json({
                 success: false,
@@ -48,9 +48,9 @@ exports.createPayment = async (req, res) => {
 
         const payments = await payment.create({
             user: req.user.id,
-            bookingId: bookingId,
+            bookingId,
             amount: booking.totalAmount,
-            paymentMethod: paymentMethod,
+            paymentMethod,
             paymentStatus: "success",
             transactionId: "TXN" + Date.now()
         })
@@ -91,7 +91,7 @@ exports.getAllPayments =async(req,res)=>{
     try {
         const payments =await payment.find()
         .populate('user','name')
-        .populate('bookingId')
+        .populate('bookingId','paymentStatus')
         .sort({  createdAt:-1 })
         res.status(200).json({
             success:true,

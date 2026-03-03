@@ -68,11 +68,11 @@ exports.getUserBooking = async (req, res) => {
 
         userId = req.user.id
         const bookings = await Booking.find({ user: userId })
-            .populate('event', 'title date venue price')
+            .populate('event', 'title date venue price totalSeats')
             .sort({ createdAt: -1 })
         res.status(200).json({
             success: true,
-            count: booking.length,
+            count: bookings.length,
             data: bookings
         })
     } catch (error) {
@@ -86,10 +86,11 @@ exports.getAllBookings = async (req, res) => {
          const bookings=await Booking.find()
          .populate('user','name email')
          .populate('event','title date venue')
+        
          .sort({ createdAt:-1 })
          res.status(200).json({
             success:true,
-             count: booking.length,
+             count: bookings.length,
             data:bookings
          })
     } catch (error) {
@@ -103,7 +104,7 @@ exports.getOneBooking=async(req,res)=>{
        
        const booking= await Booking.findById(id)
        .populate('user','name email')
-       .populate('event','title date venue price')
+       .populate('event','title date venue price time')
 
        if(!booking){
         return res.status(404).json({

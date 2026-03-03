@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs")
 
 exports.register = async (req, res) => {
     try {
-        const { name, email, password, role } = req.body;
+        const { name, email, password } = req.body;
 
         if (!name || !email || !password) {
             return res.status(409).json({
@@ -14,7 +14,7 @@ exports.register = async (req, res) => {
             })
         }
 
-        const existingUser = await User.findOne({ email });
+        const existingUser = await User.findOne({ email: email.toLowerCase() });
         if (existingUser) {
             return res.status(409).json({
                 success: false,
@@ -23,7 +23,7 @@ exports.register = async (req, res) => {
         }
 
         const newUser = new User({
-            name, email, password, role,
+            name, email:email.toLowerCase(), password, role:"user",
         })
 
         await newUser.save();
@@ -31,12 +31,6 @@ exports.register = async (req, res) => {
         res.status(201).json({
             success: true,
             message: "User created successfully",
-            data: {
-                id: newUser._id,
-                name: newUser.name,
-                email: newUser.email,
-                role: newUser.role,
-            },
         });
     } catch (error) {
         console.error("Error in register:", error);
