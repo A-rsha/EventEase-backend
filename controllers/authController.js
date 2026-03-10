@@ -43,36 +43,49 @@ exports.register = async (req, res) => {
 
 
 exports.login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
+    try {
+        const { email, password } = req.body;
 
-    if(!email || !password){
-      return res.status(400).json({ success: false, message: "Email and password required" });
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid email or passsword"
+            })
+        }
+       
+        if(!user.active){
+            return res.status(403).json({
+                success:false,
+                message:"Your Account is inactive.contact admin"
+            })
+        }
+        const token = jwt.sign(
+            { id: user._id, role: user.role },
+            process.env.SECRET_KEY,
+            { expiresIn: "1d" }
+        )
+        res.status(200).json({
+            success: true,
+            message: "Login successfull",
+            token,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            }
+        })
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        })
     }
 
-    const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ success: false, message: "Invalid email or password" });
-
-   
-    const validPassword = await bcrypt.compare(password, user.password);
-    if(!validPassword) return res.status(400).json({ success:false, message:"Invalid email or password" });
-
-    if(!user.active) return res.status(403).json({ success:false, message:"Your Account is inactive. Contact admin" });
-
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.SECRET_KEY, { expiresIn: "1d" });
-
-    res.status(200).json({
-      success: true,
-      message: "Login successful",
-      token,
-      user: { id: user._id, name: user.name, email: user.email, role: user.role }
-    });
-
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ success:false, message:"Internal server error" });
-  }
 }
+
 exports.updateStatus = async (req, res) => {
   try {
     const { active } = req.body; 
