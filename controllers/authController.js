@@ -53,7 +53,13 @@ exports.login = async (req, res) => {
                 message: "Invalid email or passsword"
             })
         }
-
+       
+        if(!user.active){
+            return res.status(403).json({
+                success:false,
+                message:"Your Account is inactive.contact admin"
+            })
+        }
         const token = jwt.sign(
             { id: user._id, role: user.role },
             process.env.SECRET_KEY,
@@ -79,6 +85,20 @@ exports.login = async (req, res) => {
     }
 
 }
+
+exports.updateStatus = async (req, res) => {
+  try {
+    const { active } = req.body; 
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { active },
+      { new: true }
+    );
+    res.status(200).json({ success: true, user });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
 
 
 exports.getprofile = async (req, res) => {
