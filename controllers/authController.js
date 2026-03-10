@@ -23,7 +23,7 @@ exports.register = async (req, res) => {
         }
 
         const newUser = new User({
-            name, email:email.toLowerCase(), password, role:"user",
+            name, email: email.toLowerCase(), password, role: "user",
         })
 
         await newUser.save();
@@ -53,6 +53,7 @@ exports.login = async (req, res) => {
                 message: "Invalid email or passsword"
             })
         }
+
         const token = jwt.sign(
             { id: user._id, role: user.role },
             process.env.SECRET_KEY,
@@ -82,11 +83,11 @@ exports.login = async (req, res) => {
 
 exports.getprofile = async (req, res) => {
     try {
-       const userId = req.user.id
-      const user = await User.findById(userId).select('-password')
-       res.status(200).json(user)
+        const userId = req.user.id
+        const user = await User.findById(userId).select('-password')
+        res.status(200).json(user)
     } catch (error) {
-          res.status(500).json({
+        res.status(500).json({
             success: false,
             message: "Internal server error"
 
