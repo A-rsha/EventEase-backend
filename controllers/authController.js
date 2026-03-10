@@ -64,7 +64,9 @@ exports.login = async (req, res) => {
             return res.status(403).json({
                 success:false,
                 message:"Your Account is inactive.contact admin"
+              
             })
+              console.log(user.active)
         }
         const token = jwt.sign(
             { id: user._id, role: user.role },
