@@ -45,23 +45,20 @@ exports.createEvent = async (req, res) => {
 
       
         const newEvent = new Event({
-            title,
-            description,
-            category,
-            date,
-            time,
-            venue,
-            price,
-            totalSeats,
-            availableSeats: totalSeats,
+    title,
+    description,
+    category,
+    date,
+    time,
+    venue,
+    price,
+    totalSeats,
+    availableSeats: totalSeats,
 
-          
-            image: req.file?.secure_url,
+    image: req.file.path,
 
-
-            createdBy: req.user.id
-        });
-
+    createdBy: req.user.id
+});
         // Save event
         const savedEvent = await newEvent.save();
 
