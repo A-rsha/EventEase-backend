@@ -1,80 +1,79 @@
 const Event = require('../models/Event');
 const User = require('../models/User');
-
 exports.createEvent = async (req, res) => {
-    console.log("EVENT CONTROLLER FILE LOADED");
+  try {
 
-    try {
+    console.log("BODY:", req.body);
+    console.log("FILE:", req.file);
 
-      
-        const user = await User.findById(req.user.id);
+    const {
+      title,
+      description,
+      category,
+      date,
+      time,
+      venue,
+      price,
+      totalSeats,
+    } = req.body;
 
-
-        if (user.role === "user") {
-            user.role = "admin";
-            await user.save();
-        }
-
-        const {
-            title,
-            description,
-            category,
-            date,
-            time,
-            venue,
-            price,
-            totalSeats
-        } = req.body;
-
-        // Validation
-        if (
-            !title ||
-            !description ||
-            !category ||
-            !date ||
-            !time ||
-            !venue ||
-            !price ||
-            !totalSeats
-        ) {
-            return res.status(400).json({
-                success: false,
-                message: "All fields are required"
-            });
-        }
-
-      
-        const newEvent = new Event({
-    title,
-    description,
-    category,
-    date,
-    time,
-    venue,
-    price,
-    totalSeats,
-    availableSeats: totalSeats,
-
-    image: req.file.path,
-
-    createdBy: req.user.id
-});
-        // Save event
-        const savedEvent = await newEvent.save();
-
-        return res.status(201).json({
-            success: true,
-            message: "Event added successfully",
-            data: savedEvent
-        });
-
-    } catch (error) {
-        console.log(error);
-
-        res.status(error.status || 500).json({
-            error: error.message || "Internal server error"
-        });
+    if (
+      !title ||
+      !description ||
+      !category ||
+      !date ||
+      !time ||
+      !venue ||
+      !price ||
+      !totalSeats
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
     }
+
+    // CHECK IMAGE
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "Image upload failed",
+      });
+    }
+
+    const newEvent = new Event({
+      title,
+      description,
+      category,
+      date,
+      time,
+      venue,
+      price,
+      totalSeats,
+      availableSeats: totalSeats,
+
+      image: req.file.path,
+
+      createdBy: req.user.id,
+    });
+
+    const savedEvent = await newEvent.save();
+
+    return res.status(201).json({
+      success: true,
+      message: "Event added successfully",
+      data: savedEvent,
+    });
+
+  } catch (error) {
+
+    console.log("CREATE EVENT ERROR:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
 
