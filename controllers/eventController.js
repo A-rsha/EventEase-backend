@@ -1,6 +1,5 @@
 const Event = require('../models/Event');
-const User = require('../models/User');
-exports.createEvent = async (req, res) => {
+const User = require('../models/User');exports.createEvent = async (req, res) => {
   try {
 
     console.log("REQ FILE:", req.file);
