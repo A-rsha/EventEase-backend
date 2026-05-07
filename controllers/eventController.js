@@ -3,8 +3,7 @@ const User = require('../models/User');
 exports.createEvent = async (req, res) => {
   try {
 
-    console.log("BODY:", req.body);
-    console.log("FILE:", req.file);
+    console.log("REQ FILE:", req.file);
 
     const {
       title,
@@ -17,27 +16,10 @@ exports.createEvent = async (req, res) => {
       totalSeats,
     } = req.body;
 
-    if (
-      !title ||
-      !description ||
-      !category ||
-      !date ||
-      !time ||
-      !venue ||
-      !price ||
-      !totalSeats
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "All fields are required",
-      });
-    }
-
-    // CHECK IMAGE
     if (!req.file) {
       return res.status(400).json({
         success: false,
-        message: "Image upload failed",
+        message: "No image uploaded",
       });
     }
 
@@ -59,9 +41,8 @@ exports.createEvent = async (req, res) => {
 
     const savedEvent = await newEvent.save();
 
-    return res.status(201).json({
+    res.status(201).json({
       success: true,
-      message: "Event added successfully",
       data: savedEvent,
     });
 
@@ -69,7 +50,7 @@ exports.createEvent = async (req, res) => {
 
     console.log("CREATE EVENT ERROR:", error);
 
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       message: error.message,
     });
