@@ -1,8 +1,11 @@
 const Event = require('../models/Event');
-const User = require('../models/User');exports.createEvent = async (req, res) => {
+const User = require('../models/User');
+exports.createEvent = async (req, res) => {
   try {
 
     console.log("REQ FILE:", req.file);
+    console.log("BODY:", req.body);
+console.log("FILE:", req.file);
 
     const {
       title,
